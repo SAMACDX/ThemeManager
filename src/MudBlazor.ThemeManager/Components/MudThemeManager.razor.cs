@@ -28,7 +28,40 @@ public partial class MudThemeManager : ComponentBaseWithState
         _currentPalette = GetPalette();
     }
 
-    public string ThemePresets { get; set; } = "Not Implemented";
+    //Este es el custom
+    public record ThemePreset(int Id, string Name, bool IsActive);
+
+    [Parameter]
+    public Dictionary<int, ThemePreset> ThemePresets { get; set; }
+
+    private int ActivePreset => ThemePresets.FirstOrDefault(x => x.Value.IsActive).Value?.Id ?? 0;
+
+    [Parameter]
+    public EventCallback<ThemePreset> ThemePresetsChanged { get; set; }
+
+    private async Task updateThemePreset(int value)
+    {
+        ThemePresets.TryGetValue(value, out var themePreset);
+
+        await ThemePresetsChanged.InvokeAsync(themePreset);
+    }
+
+    [Parameter]
+    public EventCallback OnClickActiveThemePresent { get; set; }
+
+    private async Task OnClickHandler()
+    {
+        // Dispara el evento al padre
+        if (OnClickActiveThemePresent.HasDelegate)
+        {
+            await OnClickActiveThemePresent.InvokeAsync(null);
+        }
+    }
+
+    [Parameter]
+    public bool IsSavingActiveThemeCatalog { get; set; } = false;
+
+    //
 
     [Parameter]
     public bool Open { get; set; }
@@ -51,18 +84,32 @@ public partial class MudThemeManager : ComponentBaseWithState
     protected override void OnInitialized()
     {
         base.OnInitialized();
+        ApplyTheme(Theme);
+    }
 
-        _currentPalette = GetPalette();
+    //Este es el custom
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+        ApplyTheme(Theme);
+    }
 
-        if (Theme is null)
+    //Se extrae de OnInitialized
+    private void ApplyTheme(ThemeManagerTheme? theme)
+    {
+        if (theme is null)
         {
             return;
         }
 
-        _customTheme = Theme.Theme.DeepClone();
-        _currentPaletteLight = Theme.Theme.PaletteLight.DeepClone();
-        _currentPaletteDark = Theme.Theme.PaletteDark.DeepClone();
+        _customTheme = theme.Theme.DeepClone();
+        _currentPaletteLight = theme.Theme.PaletteLight.DeepClone();
+        _currentPaletteDark = theme.Theme.PaletteDark.DeepClone();
+
+        _currentPalette = GetPalette();
     }
+    //
+
 
     public Task UpdatePalette(ThemeUpdatedValue value)
     {

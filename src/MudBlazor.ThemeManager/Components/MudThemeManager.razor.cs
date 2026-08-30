@@ -43,7 +43,7 @@ public partial class MudThemeManager : ComponentBaseWithState
     {
         ThemePresets.TryGetValue(value, out var themePreset);
 
-        await ThemePresetsChanged.InvokeAsync(themePreset).ConfigureAwait(false);
+        await ThemePresetsChanged.InvokeAsync(themePreset);
     }
 
     [Parameter]
@@ -54,7 +54,7 @@ public partial class MudThemeManager : ComponentBaseWithState
         // Dispara el evento al padre
         if (OnClickActiveThemePresent.HasDelegate)
         {
-            await OnClickActiveThemePresent.InvokeAsync(null).ConfigureAwait(false).ConfigureAwait(false);
+            await OnClickActiveThemePresent.InvokeAsync(null);
         }
     }
 
@@ -231,7 +231,7 @@ public partial class MudThemeManager : ComponentBaseWithState
 
     private async Task UpdateThemeChangedAsync()
     {
-        await ThemeChanged.InvokeAsync(Theme).ConfigureAwait(false);
+        await ThemeChanged.InvokeAsync(Theme);
         StateHasChanged();
     }
 

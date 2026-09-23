@@ -103,8 +103,10 @@ public partial class MudThemeManager : ComponentBaseWithState
         }
 
         _customTheme = theme.Theme.DeepClone();
-        _currentPaletteLight = theme.Theme.PaletteLight.DeepClone();
-        _currentPaletteDark = theme.Theme.PaletteDark.DeepClone();
+        // MudBlazor 9 declara MudTheme.PaletteLight/PaletteDark como Palette (base) — el objeto en tiempo de
+        // ejecución sigue siendo PaletteLight/PaletteDark, cast explícito para llamar al DeepClone tipado.
+        _currentPaletteLight = ((PaletteLight)theme.Theme.PaletteLight).DeepClone();
+        _currentPaletteDark = ((PaletteDark)theme.Theme.PaletteDark).DeepClone();
 
         _currentPalette = GetPalette();
     }
@@ -215,12 +217,12 @@ public partial class MudThemeManager : ComponentBaseWithState
         }
         if (_isDarkModeState.Value)
         {
-            _currentPaletteDark = _customTheme.PaletteDark;
+            _currentPaletteDark = (PaletteDark)_customTheme.PaletteDark;
             Theme.Theme.PaletteDark = _customTheme.PaletteDark;
         }
         else
         {
-            _currentPaletteLight = _customTheme.PaletteLight;
+            _currentPaletteLight = (PaletteLight)_customTheme.PaletteLight;
             Theme.Theme.PaletteLight = _customTheme.PaletteLight;
         }
 

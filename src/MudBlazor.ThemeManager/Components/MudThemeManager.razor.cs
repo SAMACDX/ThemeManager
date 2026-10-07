@@ -1,12 +1,13 @@
 ﻿using Microsoft.AspNetCore.Components;
 using MudBlazor.State;
 using MudBlazor.ThemeManager.Extensions;
+using MudBlazor.Utilities;
 
 namespace MudBlazor.ThemeManager;
 
 public partial class MudThemeManager : ComponentBaseWithState
 {
-    private static readonly PaletteLight DefaultPaletteLight = new();
+    private static readonly PaletteLight DefaultPaletteLight = ThemeDefaults.CreatePaletteLight();
     private static readonly PaletteDark DefaultPaletteDark = new();
     private readonly ParameterState<bool> _openState;
     private readonly ParameterState<bool> _isDarkModeState;
@@ -128,6 +129,8 @@ public partial class MudThemeManager : ComponentBaseWithState
         {
             case ThemePaletteColor.Primary:
                 newPalette.Primary = value.ColorStringValue;
+                // A saved theme carries an explicit PrimaryDarken (hover); recompute it so it follows the new primary.
+                newPalette.PrimaryDarken = new MudColor(value.ColorStringValue).ColorRgbDarken().ToString(MudColorOutputFormats.RGB);
                 break;
             case ThemePaletteColor.Secondary:
                 newPalette.Secondary = value.ColorStringValue;

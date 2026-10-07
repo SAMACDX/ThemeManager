@@ -2,7 +2,7 @@
 
 public class ThemeManagerTheme
 {
-    public MudTheme Theme { get; set; } = new();
+    public MudTheme Theme { get; set; } = ThemeDefaults.CreateTheme();
 
     public bool RTL { get; set; }
 
